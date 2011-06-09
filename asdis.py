@@ -1,0 +1,71 @@
+# Common assembler/disassembler routines
+
+import re
+
+comma_replace = '@@@@@@@@'
+quote_replace = '$$$$$$$$'
+
+re_label = re.compile(r'([A-Za-z_][A-Za-z0-9_]+):$')
+re_instr = re.compile(r'([A-Za-z_][A-Za-z0-9_:]*)\((.*)\);$')
+
+class QuoteMismatch(Exception):
+	pass
+	
+class InvalidInstruction(Exception):
+	pass
+	
+class InvalidFunction(Exception):
+	pass
+
+def escape(text):
+	text = text.replace('\a', '\\a')
+	text = text.replace('\b', '\\b')
+	text = text.replace('\t', '\\t')
+	text = text.replace('\n', '\\n')
+	text = text.replace('\v', '\\v')
+	text = text.replace('\f', '\\f')
+	text = text.replace('\r', '\\r')
+	text = text.replace('"', '\\"')
+	return text
+	
+def unescape(text):
+	text = text.replace('\\a', '\a')
+	text = text.replace('\\b', '\b')
+	text = text.replace('\\t', '\t')
+	text = text.replace('\\n', '\n')
+	text = text.replace('\\v', '\v')
+	text = text.replace('\\f', '\f')
+	text = text.replace('\\r', '\r')
+	text = text.replace('\\"', '"')
+	return text
+
+def remove_comment(line):
+	cpos = line.find('//')
+	if cpos == -1:
+		return line
+	line = line[:cpos]
+	return line
+	
+def get_quotes(line, n):
+	pos = 0
+	quotes = []
+	while True:
+		pos = line.find('"', pos)
+		if pos == -1:
+			break
+		quotes.append(pos)
+		pos += 1
+	return quotes
+	
+def replace_quote_commas(line, quotes):
+	pos = 0
+	while True:
+		pos = line.find(',', pos)
+		if pos == -1:
+			break
+		for squote, equote in zip(quotes[::2], quotes[1::2]):
+			if squote < pos < equote:
+				line = line[:pos] + comma_replace + line[pos+1:]
+				break
+		pos += 1
+	return line

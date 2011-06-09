@@ -1,0 +1,43 @@
+﻿BGI/Ethornell disassembler/assembler for script files and ._bp system code files (Python 3.x). For script files, use bgias.py/bgidis.py. For ._bp system code files, use bpdis.py/bpas.py.
+
+===Sample usage case (re-enabling debug window)===
+
+BGI/Ethornell games have a debug window (dbgmngr._bp) but it is not loaded in a normal released title. The ._bp script where the debug window is loaded is scrdrv._bp.
+
+First disassemble the scrdrv._bp file with bpdis.py (command line: ''bpdis.py scrdrv._bp''). Open up the disassembly (scrdrv.bpd) in a text editor and do a search for "dbgmngr._bp". You should see some code that looks like this:
+
+<pre>
+    push_byte(0x0);
+    push_offset(L01035);
+    je(0x1);
+    push_string("sysprg.arc");
+    push_string("dbgmngr._bp");
+    push_word(0x400);
+    push_dword(0x8000);
+    push_dword(0x8000);
+    cmd_80(0x44);
+L01035:
+    push_string("sysprg.arc");
+    push_string("iconmngr._bp");
+</pre>
+
+See that push_offset(L01035)? This is fed to the je command which jumps to label L01035, thus it's skipping the loading of dbgmngr._bp. One way to make it load the debug window is to move the L01035 label so that the code that loads dbgmngr._bp is executed. After moving the label, the code snippet should look like this:
+
+<pre>
+    push_byte(0x0);
+    push_offset(L01035);
+    je(0x1);
+L01035:
+    push_string("sysprg.arc");
+    push_string("dbgmngr._bp");
+    push_word(0x400);
+    push_dword(0x8000);
+    push_dword(0x8000);
+    cmd_80(0x44);
+    push_string("sysprg.arc");
+    push_string("iconmngr._bp");
+</pre>
+
+Now the debug window will be loaded no matter what. To assemble the modified file, use bpas.py (command line: ''bpas.py scrdrv.bpd''). This will output a new scrdrv._bp with the debug window enabled. 
+
+To test it out, copy this file into the game directory. Start up the game, wait until you reach normal gameplay (where it's showing a text box and stuff) and hit F11. If things went as planned, a debug window should pop up which shows which resources (graphics, music, sound, etc.) are currently being used.
