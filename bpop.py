@@ -1,6 +1,9 @@
 # BGI ._bp file opcode table
 
 import asdis
+import re
+
+re_fcn = re.compile('([A-Za-z_][A-Za-z0-9_:]*)\(.*\)')
 
 offsets = set()
 
@@ -24,22 +27,21 @@ ops = {
 0x01: ('<h', 'push_word(%#x)', None),
 0x02: ('<i', 'push_dword(%#x)', None),
 
-0x04: ('<h', 'cmd_04(%#x)', None),
+0x04: ('<h', 'push_base_offset(%#x)', None),
 0x05: ('<h', 'push_string("%s")', get_string),
 0x06: ('<h', 'push_offset(L%05x)', get_offset),
 
-0x08: ('b', 'cmd_08(%#x)', None),
-0x09: ('b', 'cmd_09(%#x)', None),
-0x0A: ('b', 'cmd_0a(%#x)', None),
+0x08: ('b', 'load(%#x)', None),
+0x09: ('b', 'move(%#x)', None),
+0x0A: ('b', 'move_arg(%#x)', None),
 0x0B: ('<bi', 'cmd_0b(%#x, %#x)', None),
 0x0C: ('bb', 'cmd_0c(%#x, %#x)', None),
 
-0x10: ('', 'cmd_10()', None),
-0x11: ('', 'cmd_11()', None),
+0x10: ('', 'load_base()', None),
+0x11: ('', 'store_base()', None),
 
 0x14: ('', 'jmp()', None),
-0x15: ('b', 'je(%#x)', None),
-#0x16: ('<I', 'call(L%05X)', None),
+0x15: ('b', 'jnz(%#x)', None),
 0x16: ('', 'call()', None),
 0x17: ('', 'ret()', None),
 
@@ -116,3 +118,12 @@ ops = {
 0xC0: ('B', 'cmd_c0(%#02x)', None),
 
 }
+
+rops = {}
+
+def make_rops():
+	for op in ops:
+		fcn, = re_fcn.match(ops[op][1]).groups()
+		rops[fcn] = op
+
+make_rops()

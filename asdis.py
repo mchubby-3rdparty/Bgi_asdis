@@ -7,11 +7,13 @@ quote_replace = '$$$$$$$$'
 
 re_label = re.compile(r'([A-Za-z_][A-Za-z0-9_]+):$')
 re_instr = re.compile(r'([A-Za-z_][A-Za-z0-9_:]*)\((.*)\);$')
+re_header = re.compile(r'#header\s+"(.+)"')
+re_define = re.compile(r'#define\s+([A-Za-z0-9_]+)\s+([A-Za-z0-9_]+)')
 
 class QuoteMismatch(Exception):
 	pass
 	
-class InvalidInstruction(Exception):
+class InvalidInstructionFormat(Exception):
 	pass
 	
 class InvalidFunction(Exception):
@@ -40,11 +42,17 @@ def unescape(text):
 	return text
 
 def remove_comment(line):
-	cpos = line.find('//')
-	if cpos == -1:
-		return line
+	cpos = 0
+	while True:
+		cpos = line.find('//', cpos)
+		if cpos == -1:
+			return line.rstrip()
+		qcount = line[:cpos].count('"') - line[:cpos].count('\\"')
+		if qcount % 2 == 0:
+			break
+		cpos += 1
 	line = line[:cpos]
-	return line
+	return line.rstrip()
 	
 def get_quotes(line, n):
 	pos = 0

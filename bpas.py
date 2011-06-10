@@ -46,7 +46,10 @@ def parse(asmtxt):
 			record = fcn, args, pos, id+1
 			text_set.update(strings)
 			instrs.append(record)
-			op = fcn2op(fcn, id+1)
+			try:
+				op = bpop.rops[fcn]
+			except KeyError:
+				raise asdis.InvalidFunction('Invalid function @ line %d' % (id+1))
 			pos += struct.calcsize(bpop.ops[op][0]) + 1
 		else:
 			raise asdis.InvalidInstructionFormat('Invalid instruction format @ line %d' % (id+1))
@@ -63,17 +66,11 @@ def parse(asmtxt):
 	size = pos
 	return instrs, symbols, texts, size
 
-def fcn2op(fcn, n):
-	for op in bpop.ops:
-		if bpop.ops[op][1].startswith(fcn):
-			return op
-	raise asdis.InvalidFunction('Invalid function @ line %d' % n)
-
 def out(fo, instrs, symbols, texts, size):
 	hdr = struct.pack('<IIII', 0x10, size, 0, 0)
 	fo.write(hdr)
 	for fcn, args, pos, n in instrs:
-		op = fcn2op(fcn, n)
+		op = bpop.rops[fcn]
 		fo.write(struct.pack('B', op))
 		arglist = []
 		for arg in args:
