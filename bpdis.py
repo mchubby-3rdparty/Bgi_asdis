@@ -1,4 +1,4 @@
-#! /usr/bin/env python3
+#!/usr/bin/env python3
 
 # BGI ._bp file disassembler
 
@@ -45,7 +45,7 @@ def parse(code):
 def out(fo, inst, offsets):
 	for addr in sorted(inst):
 		if addr in offsets:
-			fo.write('L%05x:\n' % addr)
+			fo.write('\nL%05x:\n' % addr)
 		fo.write('\t%s;\n' % inst[addr])
 		
 def dis(file):
@@ -63,7 +63,7 @@ def dis(file):
 if __name__ == '__main__':
 	if len(sys.argv) < 2:
 		print('Usage: bpdis.py <file(s)>')
-		print('(only ._bpfiles amongst <file(s)> will be processed)')
+		print('(only ._bp files amongst <file(s)> will be processed)')
 		sys.exit(1)
 	for arg in sys.argv[1:]:
 		for script in glob.glob(arg):

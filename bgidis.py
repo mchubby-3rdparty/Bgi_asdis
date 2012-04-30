@@ -1,4 +1,4 @@
-#! /usr/bin/env python3
+#!/usr/bin/env python3
 
 # BGI script file disassembler
 
@@ -71,11 +71,13 @@ def out(fo, inst, offsets, hdrtext, defines):
 			fo.write('#define %s L%05x\n' % (defines[offset], offset))
 		fo.write('\n')
 	for addr in sorted(inst):
+		if inst[addr].startswith('line('):
+			fo.write('\n')
 		if addr in offsets or addr in defines:
 			if addr in defines:
-				fo.write('%s:\n' % defines[addr])
+				fo.write('\n%s:\n' % defines[addr])
 			else:
-				fo.write('L%05x:\n' % addr)
+				fo.write('\nL%05x:\n' % addr)
 		fo.write('\t%s;\n' % inst[addr])
 		
 def dis(file):

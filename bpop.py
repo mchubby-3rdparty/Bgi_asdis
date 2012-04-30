@@ -41,7 +41,7 @@ ops = {
 0x11: ('', 'store_base()', None),
 
 0x14: ('', 'jmp()', None),
-0x15: ('b', 'jnz(%#x)', None),
+0x15: ('b', 'jc(%#x)', None),
 0x16: ('', 'call()', None),
 0x17: ('', 'ret()', None),
 
@@ -65,22 +65,22 @@ ops = {
 0x34: ('', 'lt()', None),
 0x35: ('', 'gt()', None),
 
-0x38: ('', 'cmd_38()', None),
-0x39: ('', 'cmd_39()', None),
-0x3A: ('', 'cmd_3a()', None),
+0x38: ('', 'bool_and()', None),
+0x39: ('', 'bool_or()', None),
+0x3A: ('', 'bool_zero()', None),
 
-0x40: ('', 'cmd_40()', None),
+0x40: ('', 'ternary()', None),
 
 0x42: ('', 'cmd_42()', None),
 0x43: ('', 'cmd_43()', None),
 
-0x48: ('', 'cmd_48()', None),
-0x49: ('', 'cmd_49()', None),
+0x48: ('', 'sin()', None),
+0x49: ('', 'cos()', None),
 
-0x60: ('', 'cmd_60()', None),
-0x61: ('', 'cmd_61()', None),
-0x62: ('', 'cmd_62()', None),
-0x63: ('', 'cmd_63()', None),
+0x60: ('', 'memcpy()', None),
+0x61: ('', 'memclr()', None),
+0x62: ('', 'memset()', None),
+0x63: ('', 'memcmp()', None),
 
 0x66: ('', 'cmd_66()', None),
 0x67: ('', 'cmd_67()', None),
@@ -104,18 +104,18 @@ ops = {
 0x7D: ('', 'cmd_7d()', None),
 
 0x7F: ('', 'cmd_7f()', None),
-0x80: ('B', 'cmd_80(%#02x)', None),
-0x81: ('B', 'cmd_81(%#02x)', None),
+0x80: ('B', 'sys1(%#02x)', None),
+0x81: ('B', 'sys2(%#02x)', None),
 
-0x90: ('B', 'cmd_90(%#02x)', None),
-0x91: ('B', 'cmd_91(%#02x)', None),
-0x92: ('B', 'cmd_92(%#02x)', None),
+0x90: ('B', 'grp1(%#02x)', None),
+0x91: ('B', 'grp2(%#02x)', None),
+0x92: ('B', 'grp3(%#02x)', None),
 
-0xA0: ('B', 'cmd_a0(%#02x)', None),
+0xA0: ('B', 'snd1(%#02x)', None),
 
-0xB0: ('B', 'cmd_b0(%#02x)', None),
+0xB0: ('B', 'usr1(%#02x)', None),
 
-0xC0: ('B', 'cmd_c0(%#02x)', None),
+0xC0: ('B', 'usr2(%#02x)', None),
 
 }
 

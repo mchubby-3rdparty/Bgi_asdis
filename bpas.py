@@ -1,4 +1,4 @@
-#! /usr/bin/env python3
+#!/usr/bin/env python3
 
 # BGI ._bp file assembler
 
@@ -15,12 +15,12 @@ def parse_instr(line, n):
 	fcn, argstr = asdis.re_instr.match(line).groups()
 	argstr = argstr.strip()
 	if argstr:
-		argstr = argstr.replace('\\"', asdis.quote_replace)
+		argstr = argstr.replace('\\\\', asdis.backslash_replace).replace('\\"', asdis.quote_replace)
 		quotes = asdis.get_quotes(argstr, n)
 		if len(quotes) %2 != 0:
-			raise asdis.QuoteMismatch('Mismatched quotes @ line d' % n)
+			raise asdis.QuoteMismatch('Mismatched quotes @ line %d' % n)
 		argstr = asdis.replace_quote_commas(argstr, quotes)
-		args = [x.strip().replace(asdis.comma_replace, ',').replace(asdis.quote_replace, '"') for x in argstr.split(',')]
+		args = [x.strip().replace(asdis.comma_replace, ',').replace(asdis.quote_replace, '\\"').replace(asdis.backslash_replace, '\\\\') for x in argstr.split(',')]
 		for arg in args:
 			if arg and arg[0] == '"' and arg[-1] == '"':
 				strings.add(arg)
